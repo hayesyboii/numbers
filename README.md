@@ -1,8 +1,10 @@
 # numbers
+DRAFT ONLY
+
 A script for scraping the previous numbers page at Powerball and provides a statistics table on the frequency of each number.
 Thought for 6s### Powerball Number Frequency Analyzer
 
-I'll create a web scraper that fetches Powerball results, analyzes the frequency of each number, and displays the statistics in a table.
+Created a web scraper that fetches Powerball results, analyzes the frequency of each number, and displays the statistics in a table.
 
 ```typescriptreact project="powerball-analyzer"
 ...
@@ -10,7 +12,7 @@ I'll create a web scraper that fetches Powerball results, analyzes the frequency
 
 ## How It Works
 
-I've created a Powerball number frequency analyzer with two ways to use it:
+Created a Powerball number frequency analyzer with two ways to use it:
 
 1. **Web Application**: A Next.js app with a user interface that displays the frequency statistics in a tabular format with visual indicators.
 2. **Command-Line Script**: A Node.js script that you can run directly to get the analysis results in your terminal.
