@@ -1,0 +1,163 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { ReloadIcon } from "@/components/ui/icons"
+import { Progress } from "@/components/ui/progress"
+
+interface NumberStats {
+  number: number
+  count: number
+  percentage: number
+}
+
+export function PowerballStats() {
+  const [loading, setLoading] = useState(true)
+  const [whiteballStats, setWhiteballStats] = useState<NumberStats[]>([])
+  const [powerballStats, setPowerballStats] = useState<NumberStats[]>([])
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchData = async () => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch("/api/scrape-powerball")
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch Powerball data")
+      }
+
+      const data = await response.json()
+      setWhiteballStats(data.whiteballs)
+      setPowerballStats(data.powerballs)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  return (
+    <div className="space-y-6">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+
+      <div className="flex justify-end">
+        <Button onClick={fetchData} disabled={loading} className="flex items-center gap-2">
+          {loading ? <ReloadIcon className="h-4 w-4 animate-spin" /> : <ReloadIcon className="h-4 w-4" />}
+          Refresh Data
+        </Button>
+      </div>
+
+      {loading ? (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="space-y-2">
+              <p className="text-center text-muted-foreground">Fetching Powerball data...</p>
+              <Progress value={45} className="w-full" />
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Tabs defaultValue="whiteballs">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="whiteballs">White Balls (1-69)</TabsTrigger>
+            <TabsTrigger value="powerballs">Powerballs (1-26)</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="whiteballs">
+            <Card>
+              <CardHeader>
+                <CardTitle>White Ball Frequency</CardTitle>
+                <CardDescription>Analysis of white ball numbers from Powerball drawings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Number</TableHead>
+                        <TableHead>Occurrences</TableHead>
+                        <TableHead>Percentage</TableHead>
+                        <TableHead>Visualization</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {whiteballStats.map((stat) => (
+                        <TableRow key={stat.number}>
+                          <TableCell className="font-medium">{stat.number}</TableCell>
+                          <TableCell>{stat.count}</TableCell>
+                          <TableCell>{stat.percentage.toFixed(2)}%</TableCell>
+                          <TableCell>
+                            <div className="w-full bg-gray-200 rounded-full h-2.5">
+                              <div
+                                className="bg-primary h-2.5 rounded-full"
+                                style={{ width: `${stat.percentage}%` }}
+                              ></div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="powerballs">
+            <Card>
+              <CardHeader>
+                <CardTitle>Powerball Frequency</CardTitle>
+                <CardDescription>Analysis of Powerball numbers from drawings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Number</TableHead>
+                        <TableHead>Occurrences</TableHead>
+                        <TableHead>Percentage</TableHead>
+                        <TableHead>Visualization</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {powerballStats.map((stat) => (
+                        <TableRow key={stat.number}>
+                          <TableCell className="font-medium">{stat.number}</TableCell>
+                          <TableCell>{stat.count}</TableCell>
+                          <TableCell>{stat.percentage.toFixed(2)}%</TableCell>
+                          <TableCell>
+                            <div className="w-full bg-gray-200 rounded-full h-2.5">
+                              <div
+                                className="bg-red-600 h-2.5 rounded-full"
+                                style={{ width: `${stat.percentage}%` }}
+                              ></div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      )}
+    </div>
+  )
+}
