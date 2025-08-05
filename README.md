@@ -6,10 +6,6 @@ Thought for 6s### Powerball Number Frequency Analyzer
 
 Created a web scraper that fetches Powerball results, analyzes the frequency of each number, and displays the statistics in a table.
 
-```typescriptreact project="powerball-analyzer"
-...
-```
-
 ## How It Works
 
 Created a Powerball number frequency analyzer with two ways to use it:
