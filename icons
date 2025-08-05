@@ -1,0 +1,3 @@
+import { type LightbulbIcon as LucideProps, Loader2 } from "lucide-react"
+
+export const ReloadIcon = (props: LucideProps) => <Loader2 {...props} />
